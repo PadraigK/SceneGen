@@ -1,0 +1,3 @@
+--selfrequired os_log, info, debug
+--stripunusedargs closure-only
+--wrapArguments before-first
