@@ -23,9 +23,13 @@ swift let sprite = node(.sprite2D_marker2d)
 The programmer is no longer required to maintain the types and the paths, meaning fewer run-time bugs and crashes, helpful code completion suggestions in your IDE, and faster iteration cycles.
 
 ## Usage 
+I'm still figuring out the Swift PM story for how to run this, but in the meantime, here's an approach that works well:
 
-`> swift run scene-gen <project-path> <output-path>`
- 
+1. Install Mint (`brew install mint`) if you don't already have it.
+2. Add a file named `Mintfile` to your project and put `PadraigK/SceneGen@0.0.1` in there.
+3. Run `mint bootstrap` (takes a while, maybe 5 mins)
+4. Run code generation using `mint run scenegen <project-path> <output-path>` — note that output path will be **deleted** each time this is run before code is generated. This is necessary to clean up if you remove or rename a scene.
+
 ## Benefits
 * IDE code suggestions include the names of all available nodes in your context.
 * Run-time crashes due to typos in node path accessors can’t happen anymore.
@@ -35,5 +39,4 @@ The programmer is no longer required to maintain the types and the paths, meanin
 * Supports “Access as Unique Name” to generate shorter named paths.
 * Generator works independently of the built swift GDExtension — it just works off the Godot project file and tscn files. It’s not necessary that your extension code be functional code-generation time.
 
-## Recommended Usage:
-* Run with a watcher to regenerate code every time a scene file changes 
+
