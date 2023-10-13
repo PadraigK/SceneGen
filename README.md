@@ -56,6 +56,6 @@ and then leaving it running in a terminal window as you work.
 * Generates a resource path to the tscn file so you can safely instantiate scenes in code — if you reorganize your tscn files into folders in Godot, a re-compile will fix all of these references with no code changes required on your part.
 * Also generates typed animation names which are played using syntax like `enemy.playAnimation(.explode)`
 * Supports “Access as Unique Name” to generate shorter named paths.
-* Generator works independently of the built swift GDExtension — it just works off the Godot project file and tscn files. It’s not necessary that your extension code be functional code-generation time.
+* Generator works independently of the built swift GDExtension — it just works off the Godot project file and tscn files. It’s not necessary that your extension code be buildable at code-generation time.
 
 
