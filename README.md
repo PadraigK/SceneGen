@@ -1,10 +1,10 @@
 # SceneGen
 
-Generates a set of typed descriptions of each node in the scene files (.tscn) of a Godot project. Provides an access function to get a reference to the nodes called `node()`. This tool is intended for use with Miguel de Icaza's SwiftGodot bindings and generates Swift code that depends on SwiftGodot being available. 
+Renders typed descriptions of each node in the scene files (.tscn) of a Godot project. Provides an access function to get a reference to the nodes called `node()`. This tool is intended for use with Miguel de Icaza's SwiftGodot bindings and generates Swift code that depends on SwiftGodot being available. 
 
 ## Example
 
-<img src="./Images.node-tree.png" alt="A Node Tree in Godot" width="50%" style="float: left; padding-right: 20px;">
+<img src="https://raw.githubusercontent.com/PadraigK/SceneGen/main/Images/player-scene.png" alt="A Node Tree in Godot" width="50%" align="left" style="padding-right: 20px;">
 
 ```swift
 let sprite = node(.playerSprite)  // will return a correctly typed Sprite2D object.
