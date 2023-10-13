@@ -4,7 +4,7 @@ Renders typed descriptions of each node in the scene files (.tscn) of a Godot pr
 
 ## Example
 
-<img src="https://raw.githubusercontent.com/PadraigK/SceneGen/main/Images/playerscene.png" alt="A Node Tree in Godot" width="30%" align="left" style="padding-right: 20px;">
+<img src="https://raw.githubusercontent.com/PadraigK/SceneGen/main/Images/playerscene.png" alt="A Node Tree in Godot" width="30%" align="right" style="padding-left: 20px;">
 
 In SwiftGodot a node is referenced as follows: 
 
@@ -12,7 +12,7 @@ In SwiftGodot a node is referenced as follows:
 let marker = getNodeOrNull("Sprite2D/Marker2D") as? Marker2D`.
 ```
 
-This requires the programmer to ensure that the path to the node, and its type, are correct. If there is a mismatch, the node will be nil. 
+This requires the programmer to ensure that the path to the node, and its type, are correct. If there is a mismatch, the the `marker` variable will be nil. 
 
 If we run SceneGen on this project, our root `Player` type will be extended with typed descriptions of each node. These can then be accessed in a type-safe way: 
 
@@ -20,7 +20,7 @@ If we run SceneGen on this project, our root `Player` type will be extended with
 swift let sprite = node(.sprite2D_marker2d)
 ```
 
-The programmer is no longer required to maintain the types and the paths, meaning fewer run-time bugs and crashes, helpful code completion suggestions in your IDE, and faster iteration cycles.
+The programmer is no longer responsible for maintaining the types and the paths. This will lead to fewer run-time bugs and crashes, provide helpful code completion suggestions in your IDE, and allow faster iteration cycles.
 
 ## Usage 
 I'm still figuring out the Swift PM story for how to run this, but in the meantime, here's an approach that works well:
@@ -48,7 +48,6 @@ done
 ```
 
 and then leaving it running in a terminal window as you work.
-
 
 ## Benefits
 * IDE code suggestions include the names of all available nodes in your context.
