@@ -20,6 +20,8 @@ If we run SceneGen on this project, our root `Player` type will be extended with
 swift let sprite = node(.sprite2D_marker2d)
 ```
 
+The programmer is no longer required to maintain the types and the paths, meaning fewer run-time bugs and crashes, helpful code completion suggestions in your IDE, and faster iteration cycles.
+
 ## Usage 
 
 `> swift run scene-gen <project-path> <output-path>`
