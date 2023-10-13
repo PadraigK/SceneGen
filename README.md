@@ -17,7 +17,7 @@ This requires the programmer to ensure that the path to the node, and its type, 
 If we run SceneGen on this project, our root `Player` type will be extended with typed descriptions of each node. These can then be accessed in a type-safe way: 
 
 ```
-swift let sprite = node(.sprite2D_marker2d)`.
+swift let sprite = node(.sprite2D_marker2d).
 ```
 
 ## Usage 
