@@ -4,12 +4,12 @@ Renders typed descriptions of each node in the scene files (.tscn) of a Godot pr
 
 ## Example
 
-<img src="https://raw.githubusercontent.com/PadraigK/SceneGen/main/Images/playerscene.png" alt="A Node Tree in Godot" width="30%" align="right" style="padding-left: 20px;">
+<img src="https://raw.githubusercontent.com/PadraigK/SceneGen/main/Images/playerscene.png" alt="A Node Tree in Godot" width="30%" align="right" style="padding-left: 20px; padding-bottom: 20px">
 
 In SwiftGodot a node is referenced as follows: 
 
-```swift
-let marker = getNodeOrNull("Sprite2D/Marker2D") as? Marker2D`.
+```
+let marker = getNodeOrNull("Sprite2D/Marker2D") as? Marker2D
 ```
 
 This requires the programmer to ensure that the path to the node, and its type, are correct. If there is a mismatch, the the `marker` variable will be nil. 
