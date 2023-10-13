@@ -30,6 +30,26 @@ I'm still figuring out the Swift PM story for how to run this, but in the meanti
 3. Run `mint bootstrap` (takes a while, maybe 5 mins)
 4. Run code generation using `mint run scenegen <project-path> <output-path>` — note that output path will be **deleted** each time this is run before code is generated. This is necessary to clean up if you remove or rename a scene.
 
+### Use with a Watcher 
+
+The recommended usage of SceneGen is with a watcher, like [entr](https://github.com/eradman/entr), which can be used re-run the generation anytime one of the scene files changes. 
+
+I suggest making a shell script like this:
+
+```
+#!/bin/zsh
+
+# loop because the `-d` flag on `entr` makes it exit when it 
+# detects a new or deleted file in any of the folders its watching,
+# otherwise it would only detect modifications to existing files
+while sleep 0.1; do
+	find ../ -name '*.tscn' -not -path '*/.*' | entr -d -s 'mint run <project-path> <output-path>'
+done
+```
+
+and then leaving it running in a terminal window as you work.
+
+
 ## Benefits
 * IDE code suggestions include the names of all available nodes in your context.
 * Run-time crashes due to typos in node path accessors can’t happen anymore.
