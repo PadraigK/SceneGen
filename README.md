@@ -4,10 +4,11 @@ Renders typed descriptions of each node in the scene files (.tscn) of a Godot pr
 
 ## Example
 
-Here is an example scene tree in a Godot project:
-<img src="https://raw.githubusercontent.com/PadraigK/SceneGen/main/Images/playerscene.png" alt="A Node Tree in Godot" width="25%" align="left" style="padding-right: 20px;">
+<img src="https://raw.githubusercontent.com/PadraigK/SceneGen/main/Images/playerscene.png" alt="A Node Tree in Godot" width="30%" align="left" style="padding-right: 20px;">
 
-Normally when using SwiftGodot, we reference a node by calling `let marker = getNodeOrNull("Sprite2D/Marker2D") as? Marker2D` or by using a macro to define these as computed properties: `@SceneTree(path: "Sprite2D/Marker2D") var sprite: Marker2D`. These approaches require the programmer to ensure that the path to the node, and its type, are correct. If there is a mismatch, the node will be nil.
+When using SwiftGodot, a node is referenced as follows: `let marker = getNodeOrNull("Sprite2D/Marker2D") as? Marker2D` or  using the SceneTree macro to define these as computed properties: `@SceneTree(path: "Sprite2D/Marker2D") var sprite: Marker2D`. 
+
+These approaches require the programmer to ensure that the path to the node, and its type, are correct. If there is a mismatch, the node will be nil. 
 
 If we run SceneGen on this project, our root `Player` type will be extended with typed descriptions of each node. These can then be accessed in a type-safe way: `let sprite = node(.sprite2D_marker2d)`. 
 
