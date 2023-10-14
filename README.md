@@ -1,6 +1,6 @@
 # SceneGen
 
-Renders typed descriptions of each node in the scene files (.tscn) of a Godot project. Provides an access function to get a reference to the nodes called `node()`. This tool is intended for use with Miguel de Icaza's SwiftGodot bindings and generates Swift code that depends on SwiftGodot being available. 
+Renders typed descriptions of each node in the scene files (.tscn) of a Godot project. Provides an access function to get a reference to the nodes called `node()`. This tool is intended for use with Miguel de Icaza's [SwiftGodot](https://github.com/migueldeicaza/SwiftGodot) bindings and generates Swift code that depends on SwiftGodot being available. 
 
 ## Example
 
@@ -12,7 +12,7 @@ In SwiftGodot a node is referenced as follows:
 let marker = getNodeOrNull("Sprite2D/Marker2D") as? Marker2D
 ```
 
-This requires the programmer to ensure that the path to the node, and its type, are correct. If there is a mismatch, the the `marker` variable will be nil. 
+This requires the programmer to ensure that the path to the node, and its type, are correct. If there is a mismatch, the `marker` variable will be nil. 
 
 If we run SceneGen on this project, our root `Player` type will be extended with typed descriptions of each node. These can then be accessed in a type-safe way: 
 
@@ -26,7 +26,7 @@ The programmer is no longer responsible for maintaining the types and the paths.
 I'm still figuring out the Swift PM story for how to run this, but in the meantime, here's an approach that works well:
 
 1. Install Mint (`brew install mint`) if you don't already have it.
-2. Add a file named `Mintfile` to your project and put `PadraigK/SceneGen@0.0.2` in there.
+2. Add a file named `Mintfile` to your project and put `PadraigK/SceneGen@0.0.3` in there.
 3. Run `mint bootstrap` (takes a while, maybe 5 mins)
 4. Run code generation using `mint run scenegen <project-path> <output-path>` — note that output path will be **deleted** each time this is run before code is generated. This is necessary to clean up if you remove or rename a scene.
 
