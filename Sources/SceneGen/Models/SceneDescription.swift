@@ -13,6 +13,7 @@ struct SceneDescription {
         case noStateOnScene
         case noNodesInScene
         case notACustomNode
+        case inheritedScene
     }
 
     let name: String
@@ -29,7 +30,14 @@ struct SceneDescription {
         name = state.getNodeName(idx: 0).description
         type = state.getNodeType(idx: 0).description
 
-        // Awful hack to detect if this is a node that we want
+        if type.isEmpty {
+            // This is an inherited scene, so we'll skip it because
+            // there's no type to extend. May need to return to this
+            // if inherited scenes can have their own SwiftGodot sub-
+            // classes.
+            throw Errors.inheritedScene
+        }
+        // Awful hack to detect if this is a scene that we want
         // to generate an extension on or not.
         if NSClassFromString("SwiftGodot.\(type)") != nil {
             throw Errors.notACustomNode
