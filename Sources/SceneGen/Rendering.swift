@@ -21,6 +21,21 @@ private extension ImportDeclSyntax {
     }
 }
 
+private extension ExtensionDeclSyntax {
+    static func conform(
+        type: some TypeSyntaxProtocol,
+        to conformType: some TypeSyntaxProtocol
+    ) -> ExtensionDeclSyntax {
+        ExtensionDeclSyntax(
+            leadingTrivia: .newline,
+            extendedType: type,
+            inheritanceClause: InheritanceClauseSyntax(
+                inheritedTypes: [InheritedTypeSyntax(type: conformType)]
+            )
+        ) {}
+    }
+}
+
 enum Renderer {
     /// Renders shared code that is used by other renderers
     static func renderSharedCode() throws -> SourceFile {
@@ -30,14 +45,8 @@ enum Renderer {
             ProtocolDeclSyntax(name: "NodeProtocol") {
                 DeclSyntax("init()")
             }
-
-            ExtensionDeclSyntax(
-                leadingTrivia: .newline,
-                extendedType: "Node" as TypeSyntax,
-                inheritanceClause: InheritanceClauseSyntax(
-                    inheritedTypes: [InheritedTypeSyntax(type: "NodeProtocol" as TypeSyntax)]
-                )
-            ) {}
+            
+            ExtensionDeclSyntax.conform(type: "Node" as TypeSyntax, to: "NodeProtocol" as TypeSyntax)
         }
 
         return .init(
@@ -133,6 +142,9 @@ enum Renderer {
 
             for animationPlayer in animationPlayers {
                 let animationNameType = TypeSyntax("\(raw: sceneDescription.type).\(raw: animationPlayer.playerPath)AnimationName")
+                
+                ExtensionDeclSyntax.conform(type: animationNameType, to: "Equatable" as TypeSyntax)
+                
                 try ExtensionDeclSyntax(leadingTrivia: .newlines(2), extendedType: animationNameType) {
                     for animationName in animationPlayer.animationNames {
                         try VariableDeclSyntax("static let \(raw: animationName.snakeToCamelcase()) = Self(\"\(raw: animationName)\")")
