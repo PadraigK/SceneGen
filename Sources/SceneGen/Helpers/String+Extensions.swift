@@ -7,6 +7,10 @@ import Foundation
 
 
 extension String {
+    func dropPrefix(_ prefix: String) -> String {
+        hasPrefix(prefix) ? String(dropFirst(prefix.count)) : self
+    }
+    
     func swiftName() -> String {
         if self == uppercased() {
             lowercased()

@@ -37,6 +37,85 @@ private extension ExtensionDeclSyntax {
 }
 
 enum Renderer {
+    /// Renders typed keys for settings like InputMaps
+    static func renderProjectSettingsNames(propertyNames: [String]) throws -> SourceFile {
+        let source = try SourceFileSyntax {
+            ImportDeclSyntax.standardHeader()
+            
+            // InputMap adds .macos / .windows etc for custom inputs for each
+            // platform, but in code, you only reference the root and don't worry
+            // about it, so we won't generate any with a "."
+            let inputNames = propertyNames
+                .filter { $0.hasPrefix("input/") }
+                .filter { !$0.contains(".") }
+                .map { $0.dropPrefix("input/") }
+            
+            try ExtensionDeclSyntax(leadingTrivia: .newline, extendedType: "InputActionName" as TypeSyntax as TypeSyntax) {
+                
+                for inputName in inputNames {
+                    let variableName = inputName
+                        .snakeToCamelcase()
+                    
+                    try VariableDeclSyntax(
+                        "static let \(raw: variableName) = Self(\"\(raw: inputName)\")"
+                    )
+                }
+            }
+            
+            try StructDeclSyntax(
+                leadingTrivia: .newlines(2),
+                name: "InputActionName"
+            ) {
+                DeclSyntax("let rawValue: StringName")
+
+                try InitializerDeclSyntax("init(_ rawValue: StringName)") {
+                    ExprSyntax("self.rawValue = rawValue")
+                }
+            }
+        
+            ExtensionDeclSyntax.conform(type: "InputActionName" as TypeSyntax, to: "Equatable" as TypeSyntax)
+            
+            ExtensionDeclSyntax(leadingTrivia: .newline, extendedType: "Input" as TypeSyntax) {
+                DeclSyntax(
+                """
+                static func isActionPressed(_ action: InputActionName) -> Bool {
+                    isActionPressed(action: action.rawValue)
+                }
+                """
+                )
+                DeclSyntax(
+                """
+                static func isActionJustPressed(_ action: InputActionName) -> Bool {
+                    isActionJustPressed(action: action.rawValue)
+                }
+                """
+                )
+                DeclSyntax(
+                """
+                static func getAxis(negative: InputActionName, positive: InputActionName) -> Double {
+                    getAxis(negativeAction: negative.rawValue, positiveAction: positive.rawValue)
+                }
+                """
+                )
+            }
+            
+            ExtensionDeclSyntax(leadingTrivia: .newline, extendedType: "InputEvent" as TypeSyntax) {
+                DeclSyntax(
+                """
+                func isActionPressed(_ action: InputActionName) -> Bool {
+                    isActionPressed(action: action.rawValue)
+                }
+                """
+                )
+            }
+        }
+        
+        return .init(
+            text: source.formatted().description,
+            fileName: "InputMapHelpers.swift"
+        )
+    }
+    
     /// Renders shared code that is used by other renderers
     static func renderSharedCode() throws -> SourceFile {
         let source = SourceFileSyntax {

@@ -57,3 +57,25 @@ extension SwiftGodot.SceneState {
         return library.getAnimationList().map(\.description)
     }
 }
+
+extension ProjectSettings {
+    /*
+     Note: getPropertyList() returns an array of GDict, with these keys:
+      name = debug/shapes/navigation/link_connection_color
+      class_name =
+      type = 20
+      hint = 0
+      hint_string =
+      usage = 6
+    */
+    
+    /// Lists all of the properties in this ProjectSettings instance
+    func propertyNames() -> [String] {
+        getPropertyList().compactMap { dict in
+            guard let value = dict["name"] else {
+                return nil
+            }
+            return value.description
+        }
+    }
+}

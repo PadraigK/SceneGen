@@ -30,7 +30,21 @@ struct SceneGen: ParsableCommand {
             projectUrl.relativePath(to: $0)
         }
 
-        GodotTools.runInGodot(projectPath: projectPath) { _ in
+        GodotTools.runInGodot(projectPath: projectPath) { scene in
+            let propertyList = ProjectSettings.shared.propertyNames()
+            
+            do {
+                try Renderer.renderProjectSettingsNames(
+                    propertyNames: propertyList
+                )
+                .writeToFolder(outputUrl)
+                Log.info("Generated ProjectSettings code.")
+            } catch {
+                print("Failed to generate ProjectSettings code. \(error)")
+                Log.error("Error generating and writing ProjectSettings code to \(outputUrl, privacy: .public): \(error)")
+                return ExitCode.failure.rawValue
+            }
+            
             for path in scenePaths {
                 do {
                     try Renderer.renderExtension(
@@ -41,11 +55,11 @@ struct SceneGen: ParsableCommand {
                         )
                     )
                     .writeToFolder(outputUrl)
+                    Log.info("Generated extension for \(path, privacy: .public)")
                 } catch {
-                    print("Failed to generate code for file: \(path). \(error)")
-                    Log.error("Error generating swift for file: \(path, privacy: .public). \(error)")
+                    print("Skipped generating code for file: \(path). \(error)")
+                    Log.error("Skipped generating swift code for file: \(path, privacy: .public). \(error)")
                 }
-                Log.info("Generated extension for \(path, privacy: .public)")
             }
 
             do {
