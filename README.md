@@ -54,7 +54,9 @@ and then leaving it running in a terminal window as you work.
 * Run-time crashes due to typos in node path accessors can’t happen anymore.
 * When you rename or reorganize node paths in the Godot Editor, the compiler will emit errors at build time in your swift code, giving you precise hints about what to fix, instead of run-time crashes.
 * Generates a resource path to the tscn file so you can safely instantiate scenes in code — if you reorganize your tscn files into folders in Godot, a re-compile will fix all of these references with no code changes required on your part.
-* Also generates typed animation names which are played using syntax like `enemy.playAnimation(.explode)`
+* As well as node accessors, SceneGen also generates:
+	* Typed animation names which are played using this syntax: `enemy.playAnimation(.explode)`
+	* Typed Input names from the InputMap in project settings, so you can do `let jump = Input.isActionJustPressed(.jump)`
 * Supports “Access as Unique Name” to generate shorter named paths.
 * Generator works independently of the built swift GDExtension — it just works off the Godot project file and tscn files. It’s not necessary that your extension code be buildable at code-generation time.
 
