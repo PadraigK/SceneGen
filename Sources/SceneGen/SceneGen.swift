@@ -30,21 +30,22 @@ struct SceneGen: ParsableCommand {
             projectUrl.relativePath(to: $0)
         }
 
-        GodotTools.runInGodot(projectPath: projectPath) { scene in
-            let propertyList = ProjectSettings.shared.propertyNames()
-            
+        GodotTools.runInGodot(projectPath: projectPath) { _ in
+            let inputNames = ProjectSettings.shared
+                .propertyNames()
+                .compactMap { InputPropertyName($0) }
+
             do {
-                try Renderer.renderProjectSettingsNames(
-                    propertyNames: propertyList
-                )
-                .writeToFolder(outputUrl)
+                try Renderer
+                    .renderInputNames(inputNames: inputNames)
+                    .writeToFolder(outputUrl)
                 Log.info("Generated ProjectSettings code.")
             } catch {
                 print("Failed to generate ProjectSettings code. \(error)")
                 Log.error("Error generating and writing ProjectSettings code to \(outputUrl, privacy: .public): \(error)")
                 return ExitCode.failure.rawValue
             }
-            
+
             for path in scenePaths {
                 do {
                     try Renderer.renderExtension(

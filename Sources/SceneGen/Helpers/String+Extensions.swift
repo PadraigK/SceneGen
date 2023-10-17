@@ -5,12 +5,11 @@
 
 import Foundation
 
-
 extension String {
     func dropPrefix(_ prefix: String) -> String {
         hasPrefix(prefix) ? String(dropFirst(prefix.count)) : self
     }
-    
+
     func swiftName() -> String {
         if self == uppercased() {
             lowercased()
@@ -21,13 +20,13 @@ extension String {
 
     func snakeToCamelcase() -> String {
         let parts = split(separator: "_")
-        
+
         guard let firstItem = parts.first else {
-             return ""
+            return ""
         }
-        
+
         return String(firstItem).swiftName() +
-        parts.dropFirst().map { String($0).uppercaseFirstLetter() }.joined()
+            parts.dropFirst().map { String($0).uppercaseFirstLetter() }.joined()
     }
 
     private func lowercaseFirstLetter() -> String {
@@ -37,6 +36,7 @@ extension String {
             self
         }
     }
+
     private func uppercaseFirstLetter() -> String {
         if let firstLetter = first {
             firstLetter.uppercased() + dropFirst()

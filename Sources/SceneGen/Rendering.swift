@@ -1,5 +1,5 @@
 //
-//  Generator.swift
+//  Rendering.swift
 //
 //
 //  Created by Padraig O Cinneide on 2023-10-09.
@@ -7,6 +7,28 @@
 
 import SwiftSyntax
 import SwiftSyntaxBuilder
+
+/*
+ This syntax code gets hard to follow easily. We can mitigate that by
+ following these patterns:
+
+ 1. Process the data you need for input separately from the actual
+    rendering. The renderer should just take a simple model with everything
+    neatly arranged for it to output.
+ 2. Use private extensions to extract boilerplate, especially when it's
+    repeated in a few places.
+ 3. When writing these private extensions, try to accept arguments that
+    are concrete types, like `TypeSyntax`, instead of protocols like
+    `TypeSyntaxProtocol`. This will allow you to leverage
+    `ExpressibleByStringLiteral` so you can just pass a string at the
+    call-site.
+ 4. As much as possible, keep the `SwiftSyntax` bits quarantined to this one
+    file. Don't return/take as input any SwiftSyntax types except in private
+    functions.
+ 5. Don't go to extremes to specify everything as granularly as possible. When
+    dropping in a utility function with no interpolation, favour using
+    DeclSyntax().
+ */
 
 private extension ImportDeclSyntax {
     /// A helper to generate a standard import header and file comment
@@ -22,10 +44,7 @@ private extension ImportDeclSyntax {
 }
 
 private extension ExtensionDeclSyntax {
-    static func conform(
-        type: some TypeSyntaxProtocol,
-        to conformType: some TypeSyntaxProtocol
-    ) -> ExtensionDeclSyntax {
+    static func conform(type: TypeSyntax, to conformType: TypeSyntax) -> ExtensionDeclSyntax {
         ExtensionDeclSyntax(
             leadingTrivia: .newline,
             extendedType: type,
@@ -36,32 +55,26 @@ private extension ExtensionDeclSyntax {
     }
 }
 
+extension InputPropertyName {
+    func variableName() -> String {
+        rawValue.snakeToCamelcase()
+    }
+}
+
 enum Renderer {
     /// Renders typed keys for settings like InputMaps
-    static func renderProjectSettingsNames(propertyNames: [String]) throws -> SourceFile {
+    static func renderInputNames(inputNames: [InputPropertyName]) throws -> SourceFile {
         let source = try SourceFileSyntax {
             ImportDeclSyntax.standardHeader()
-            
-            // InputMap adds .macos / .windows etc for custom inputs for each
-            // platform, but in code, you only reference the root and don't worry
-            // about it, so we won't generate any with a "."
-            let inputNames = propertyNames
-                .filter { $0.hasPrefix("input/") }
-                .filter { !$0.contains(".") }
-                .map { $0.dropPrefix("input/") }
-            
+
             try ExtensionDeclSyntax(leadingTrivia: .newline, extendedType: "InputActionName" as TypeSyntax as TypeSyntax) {
-                
                 for inputName in inputNames {
-                    let variableName = inputName
-                        .snakeToCamelcase()
-                    
                     try VariableDeclSyntax(
-                        "static let \(raw: variableName) = Self(\"\(raw: inputName)\")"
+                        "static let \(raw: inputName.variableName()) = Self(\"\(raw: inputName.rawValue)\")"
                     )
                 }
             }
-            
+
             try StructDeclSyntax(
                 leadingTrivia: .newlines(2),
                 name: "InputActionName"
@@ -72,50 +85,50 @@ enum Renderer {
                     ExprSyntax("self.rawValue = rawValue")
                 }
             }
-        
-            ExtensionDeclSyntax.conform(type: "InputActionName" as TypeSyntax, to: "Equatable" as TypeSyntax)
-            
+
+            ExtensionDeclSyntax.conform(type: "InputActionName", to: "Equatable")
+
             ExtensionDeclSyntax(leadingTrivia: .newline, extendedType: "Input" as TypeSyntax) {
                 DeclSyntax(
-                """
-                static func isActionPressed(_ action: InputActionName) -> Bool {
-                    isActionPressed(action: action.rawValue)
-                }
-                """
+                    """
+                    static func isActionPressed(_ action: InputActionName) -> Bool {
+                        isActionPressed(action: action.rawValue)
+                    }
+                    """
                 )
                 DeclSyntax(
-                """
-                static func isActionJustPressed(_ action: InputActionName) -> Bool {
-                    isActionJustPressed(action: action.rawValue)
-                }
-                """
+                    """
+                    static func isActionJustPressed(_ action: InputActionName) -> Bool {
+                        isActionJustPressed(action: action.rawValue)
+                    }
+                    """
                 )
                 DeclSyntax(
-                """
-                static func getAxis(negative: InputActionName, positive: InputActionName) -> Double {
-                    getAxis(negativeAction: negative.rawValue, positiveAction: positive.rawValue)
-                }
-                """
+                    """
+                    static func getAxis(negative: InputActionName, positive: InputActionName) -> Double {
+                        getAxis(negativeAction: negative.rawValue, positiveAction: positive.rawValue)
+                    }
+                    """
                 )
             }
-            
+
             ExtensionDeclSyntax(leadingTrivia: .newline, extendedType: "InputEvent" as TypeSyntax) {
                 DeclSyntax(
-                """
-                func isActionPressed(_ action: InputActionName) -> Bool {
-                    isActionPressed(action: action.rawValue)
-                }
-                """
+                    """
+                    func isActionPressed(_ action: InputActionName) -> Bool {
+                        isActionPressed(action: action.rawValue)
+                    }
+                    """
                 )
             }
         }
-        
+
         return .init(
             text: source.formatted().description,
             fileName: "InputMapHelpers.swift"
         )
     }
-    
+
     /// Renders shared code that is used by other renderers
     static func renderSharedCode() throws -> SourceFile {
         let source = SourceFileSyntax {
@@ -124,23 +137,13 @@ enum Renderer {
             ProtocolDeclSyntax(name: "NodeProtocol") {
                 DeclSyntax("init()")
             }
-            
-            ExtensionDeclSyntax.conform(type: "Node" as TypeSyntax, to: "NodeProtocol" as TypeSyntax)
+
+            ExtensionDeclSyntax.conform(type: "Node", to: "NodeProtocol")
         }
 
         return .init(
             text: source.formatted().description,
             fileName: "SceneGenShared.swift"
-        )
-    }
-
-    private static func importHeader(originText: String = "") -> some DeclSyntaxProtocol {
-        ImportDeclSyntax(
-            leadingTrivia: [
-                .lineComment("// generated by SceneGen from \(originText) - do not edit directly"),
-                .newlines(2),
-            ],
-            path: [.init(name: "SwiftGodot")]
         )
     }
 
@@ -221,9 +224,9 @@ enum Renderer {
 
             for animationPlayer in animationPlayers {
                 let animationNameType = TypeSyntax("\(raw: sceneDescription.type).\(raw: animationPlayer.playerPath)AnimationName")
-                
-                ExtensionDeclSyntax.conform(type: animationNameType, to: "Equatable" as TypeSyntax)
-                
+
+                ExtensionDeclSyntax.conform(type: animationNameType, to: "Equatable")
+
                 try ExtensionDeclSyntax(leadingTrivia: .newlines(2), extendedType: animationNameType) {
                     for animationName in animationPlayer.animationNames {
                         try VariableDeclSyntax("static let \(raw: animationName.snakeToCamelcase()) = Self(\"\(raw: animationName)\")")
