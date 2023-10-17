@@ -17,7 +17,7 @@ This requires the programmer to ensure that the path to the node, and its type, 
 If we run SceneGen on this project, our root `Player` type will be extended with typed descriptions of each node. These can then be accessed in a type-safe way: 
 
 ```
-let sprite = node(.sprite2D_marker2d)
+let marker = node(.sprite2D_marker2d)
 ```
 
 The programmer is no longer responsible for maintaining the types and the paths. This will lead to fewer run-time bugs and crashes, provide helpful code completion suggestions in your IDE, and allow faster iteration cycles.
