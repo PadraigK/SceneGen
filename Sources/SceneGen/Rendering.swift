@@ -159,6 +159,11 @@ enum Renderer {
                     animationNames: $0.options
                 )
             }
+        
+        // Sort the keys so that we generate deterministically
+        let nodeGroups = groupedByNodeType
+            .map { (nodeType: $0, outlets: $1) }
+            .sorted { $0.nodeType > $1.nodeType }
 
         let source = try SourceFileSyntax {
             ImportDeclSyntax.standardHeader(originText: "from \(sceneDescription.filePath)")
@@ -209,7 +214,7 @@ enum Renderer {
                 }
             }
 
-            for (nodeType, outlets) in groupedByNodeType {
+            for (nodeType, outlets) in nodeGroups {
                 try ExtensionDeclSyntax(
                     leadingTrivia: .newlines(2),
                     extendedType: TypeSyntax("\(raw: sceneDescription.type).NodeAccessor<\(raw: nodeType)>")
