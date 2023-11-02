@@ -26,7 +26,7 @@ The programmer is no longer responsible for maintaining the types and the paths.
 I'm still figuring out the Swift PM story for how to run this, but in the meantime, here's an approach that works well:
 
 1. Install Mint (`brew install mint`) if you don't already have it.
-2. Add a file named `Mintfile` to your project and put `PadraigK/SceneGen@0.1.0` (or whatever the latest release tag is) in there. 
+2. Add a file named `Mintfile` to your project and put `PadraigK/SceneGen@0.1.1` (or whatever the latest release tag is) in there. 
 3. Run `mint bootstrap` (takes a while, maybe 5 mins)
 4. Run code generation using `mint run scenegen <project-path> <output-path>` — note that output path will be **deleted** each time this is run before code is generated. This is necessary to clean up if you remove or rename a scene.
 
